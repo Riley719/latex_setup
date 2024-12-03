@@ -1,0 +1,346 @@
+\documentclass[11pt, a4paper]{ltjsarticle}
+\usepackage{luatexja}
+\usepackage{type1cm}
+\usepackage{graphicx}
+
+%Page setting
+\usepackage[margin=20truemm]{geometry} %margin
+\usepackage{tocloft} %目次
+% 章見出しからページ番号までを点線でつなぐ
+\renewcommand{\cftsecleader}{\cftdotfill{\cftsecdotsep}}
+% 点線の点間隔の調整
+\renewcommand{\cftsecdotsep}{\cftdotsep}
+
+
+%Letters
+\usepackage{
+    amsmath,
+    mathtools,
+    amssymb,
+    physics,
+    pifont
+}
+% \usepackage{kantlipsum} %これはダミーテキスト生成用
+% \usepackage{showframe} %これはえぐいことになるやつ．おそらく開発者用．
+\allowdisplaybreaks %これはalignがページブレイクする．
+\newcommand{\mf}[1]{\mathfrak{#1}} %Shorten mathfrak command
+\newcommand{\mb}[1]{\mathbb{#1}} %Shorten mathbb command
+\newcommand{\rad}{\mathrm{Rad}}
+\renewcommand{\ker}{\mathrm{Ker}}
+\newcommand{\defarrow}{\overset{\mathrm{def}}{\iff}}
+\newsavebox{\circlebox}
+\savebox{\circlebox}{\fontencoding{OMS}\selectfont\large\char13}
+\newlength{\circleboxwdht}
+\newcommand{\centercircle}[1]{%
+  \setlength{\circleboxwdht}{\wd\circlebox}%
+  \addtolength{\circleboxwdht}{\dp\circlebox}%
+  \raisebox{0.4\dp\circlebox}{%
+    \parbox[][\circleboxwdht][c]{\wd\circlebox}{\centering#1}}%
+  \llap{\usebox{\circlebox}}%
+}
+\newcommand{\cbecause}{\centercircle{$\because$}~}
+% \usepackage[no-math,deluxe,expert,haranoaji]{luatexja-preset} %源ノフォント使えるけどコンパイル遅いし見にくい
+%Warnign triangle and its opposite one
+\newcommand{\warningtriangle}{%
+  \raisebox{-0.55em}{%
+    \tikzset{every picture/.style={line width=0.75pt}} % default line width
+    \begin{tikzpicture}[scale=0.25, line join=round]
+      % Draw the triangle
+      \filldraw[fill=yellow!30, draw=yellow] (0,0) -- (1,-1.732) -- (-1,-1.732) -- cycle;
+      % Draw the exclamation mark
+      \node at (0,-1.1) {\textcolor{black}{\normalsize !}};
+    \end{tikzpicture}%
+  }%
+}
+\newcommand{\warningopptriangle}{%
+  \raisebox{-0.35em}{%
+    \tikzset{every picture/.style={line width=0.75pt}} % default line width
+    \begin{tikzpicture}[scale=0.25, line join=round, rotate=180]
+      % Draw the triangle
+      \filldraw[fill=yellow!30, draw=yellow] (0,0) -- (1,-1.732) -- (-1,-1.732) -- cycle;
+      % Draw the exclamation mark
+      \node at (0,-1.1) {\textcolor{black}{\normalsize ¡}};
+    \end{tikzpicture}%
+  }%
+}
+
+
+%Appearance
+\pagenumbering{arabic}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % clear existing header/footer entries
+\fancyfoot[C]{\thepage \hspace{1pt} \slash \hspace{1pt} \pageref{LastPage}}%Place Page X / Y
+\renewcommand{\headrulewidth}{0pt} %Delete header line
+\renewcommand{\footrulewidth}{0pt} %Delete footer line
+\newcommand{\ds}[1]{\displaystyle{#1}}
+\newcommand{\sankakko}[1]{\langle #1 \rangle}
+\usepackage[hyphens]{url}
+\renewcommand{\refname}{} %参考文献の章の名前を削除
+
+
+%Enumerating setting
+\usepackage[at]{easylist}
+
+
+\usepackage{statementsp2}
+\usepackage{luacolor}
+\newcommand{\ul}[1]{\underLine{#1}}
+\newcommand{\redhl}[1]{\underLine[color=red!40, top=11.5pt, height=16pt]{#1}}
+
+
+%Matrix
+\newcommand{\bmat}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\matri}[2]{\mathrm{M}_{#1}(#2)}
+\newcommand{\genl}[2]{\mathrm{GL}_{#1}(#2)}
+\DeclareMathOperator{\diag}{diag}
+\renewcommand{\vector}[2]{{#1}_1, \ldots , {#1}_{#2}}
+\newcommand{\mappingsp}[5]{
+    \begin{align}
+        \begin{array}{rccc}
+            #1\colon &#2                     &\longrightarrow& #3                     \\
+                    & \rotatebox{90}{$\in$}&               & \rotatebox{90}{$\in$} \\
+                    & #4                    & \longmapsto   & #5
+            \end{array}
+    \end{align}
+}
+\newcommand{\trans}[1]{{}^t#1}
+\newcommand{\helmit}[1]{{}^{\dag}#1}
+\usepackage[shortlabels]{enumitem}
+
+\title{statementsp2パッケージ使用例スペシャル}
+\author{Riley~@Na2COOH\_2}
+
+
+\begin{document}
+\maketitle
+\begin{abstract}
+    数学文書における定理命題等のボックスの生成補助のためのパッケージであるstatementsp2.styの使用例を示す文書である．このスタイルファイルの解説や想定している仕様などはnoteを見ていただきたく思う．
+\end{abstract}
+
+\tableofcontents
+\thispagestyle{fancy} %maketitleやらtableofcontestsやらの仕様でこれを入れないとページ番号の設定がこのページだけ強制的に変更される．
+\newpage 
+
+\section{公理とか定義}
+以下のようなステートメント関係のBoxを自動生成できる．
+\begin{statementsp}<axiom>[first](公理の名前)
+    以下は同値である．
+    \begin{enumerate}[(1)]
+        \item 選択公理
+        \item Zornの補題
+        \item 整列可能定理
+    \end{enumerate}
+    これらが同値なことの証明は易しくない．
+\end{statementsp}
+上のBoxはtcolorboxパッケージを利用して作成している．形や色などのデザインはスタイルファイルをいじれば適宜変更できる．ユーザーレベルのLaTeXしか使っていないのでTeX言語の理解はいらないと思われる．
+
+公理の次は定義をするのが一般的だろう．
+
+\begin{statementsp}<def>[second](定義の名前)
+    \refsp{axiom:first}で述べた選択公理とは以下の主張を指す．
+    \begin{tcolorbox}
+        \begin{align}
+            \forall \lambda \in \Lambda, A_{\lambda} \neq \emptyset \Longrightarrow \prod_{\lambda \in \Lambda}A_{\lambda} \neq \emptyset
+        \end{align}
+    \end{tcolorbox}
+\end{statementsp}
+
+上のBoxのようにBoxの中には基本なんでも入れられる．ステートメントのカウンターは\\ 
+「(セクション番号).(そのセクションでの全ステートメントにおける順番)」\\ 
+で自動で割り当てられる．ラベルを付けて参照することができる．\refsp{def:second}みたいな感じで．単一のコマンドで「(ステートメント種) (番号)」のように自動で表示される．ステートメント種は参照先のものに合わせて自動割り当てされる．もちろんハイパーリンクも自動で付く．また，先の方で述べられるステートメントも参照可能である．\refsp{prop:third}のように．
+
+\section{定理とか命題}
+公理や定義を述べたら定理や命題が来るだろう．
+\begin{statementsp}<prop>[third](命題の名前)
+    命題をここで述べる．
+\end{statementsp}
+
+
+
+再掲，Recallというかたちですでに述べたものを再度リマークしておきたいことがあるだろう．そういうときは以下のように表示されてほしい．
+
+\refcallsp{prop:third}
+先の方で証明することになる定理を予告というかプレビューのように掲載したいときは以下のように表示されてほしい．(ドラクエの初めの方に見えるけど行けない島みたいなワクワク感がある文書を書ける．)
+
+\refcallsp{th:forth}
+PreviewとRecallは単一のコマンドでref系統のコマンドで参照するときのようにコマンドを打つのみでPreview，Recallそれぞれの専用のBoxが出現するようにできる．単一のコマンドであるが本掲載の前後どちらにあるか自動判別してデザインを変えてくれる．上のように別掲載のやつらには本掲載に飛ぶハイパーリンクが付く．
+
+他にも様々な枠がありスタイルファイルをいじる気力があれば別の名前に変えたり新たなる枠を増やしたりできる．枠ごとにデザインが異なるがカウンターや再掲のためのプログラムは統一的に記述しているので少しいじれば枠は増やせる．
+
+\begin{statementsp}<lem>[]()
+    補題だよ．
+\end{statementsp}
+
+\begin{statementsp}<rem>[]()
+    注意だよ．
+\end{statementsp}
+
+\begin{statementsp}<question>[]()
+    問題だよ．
+\end{statementsp}
+
+\begin{statementsp}<pred>[]()
+    予想だよ．
+\end{statementsp}
+
+これらのように名前がついていない枠のときは自動で括弧は省略される．言い忘れていたがカウンターはセクション内の通し番号．また，見た目ではわからないが上のBoxにはラベルが付いていない．枠を作るごとに余計にラベルが生成されることはない．\\ 
+次のようにカウンターが付いていない枠も作れる．
+
+\begin{statementsp*}<cor>[fifth](系の名前)
+    系だよ．    
+\end{statementsp*}
+
+カウンターが付いていない枠を入れてもカウンターは増えない．この枠に対して名前を付けないことも可能．
+
+\begin{statementsp*}<prop>[sixth]()
+    名前もカウンターもない命題．    
+\end{statementsp*}
+
+このような枠でも必要であればラベルを付けて予告や再掲はできる．
+
+\refcallsp{prop:sixth}
+
+ただしカウンターが付いていない枠をref系コマンドで参照することはできない．参照するのなら番号をつけるべきと考えたからである．
+
+以下のようにずっと前にPreviewした枠が出現する．
+
+\begin{statementsp}<th>[forth](ピタゴラスの定理)
+    ピタゴラスの定理はよく知られている．    
+\end{statementsp}
+
+他のセクションのRecallや参照もできる．
+
+\refcallsp{prop:third}
+
+\refsp{axiom:first}
+
+\section{バグなど（教えて～）}
+個人的最強定理環境だと思っているが改善すべき点はいくつかある．\\ 
+まず次のように長すぎる名前を書くとはみ出てしまいうまく改行してくれない．頑張ればうまく表示させることはできるんだろうけどめんどい．
+
+\begin{statementsp}<prop>[](あしながながあしながなが～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～)
+    はみ出てしまいました．
+\end{statementsp}
+
+また，tcolorboxの設定で大きすぎる枠だった場合は以下のようにうまくページまたぎしてくれる．
+
+\begin{statementsp}<ex>[](たくさんの例)
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！\\ 
+    たくさんの例！
+\end{statementsp}
+
+しかしながら大きな枠の中に大きなtcolorboxを入れた場合はうまくまたいでくれない．この文章のすぐ下に枠が来てページまたぎしてほしいのに大きな空白を残して次のページに行ってしまう．しかも中の枠はページまたぎできず見切れてしまう．
+
+\begin{statementsp}<rem>[](たくさんの注意)
+    \begin{tcolorbox}
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\ 
+        大きな注意！\\
+    \end{tcolorbox}
+\end{statementsp}
+
+そしてラベルについて，このパッケージでは枠の環境を作るときにラベルを入力できる箇所があるのだが（空白にすればラベルは生成されない．）ラベルを付けると予告や再掲のために現在の番号を保存するために一個余計なラベルを生成してしまう．こいつのせいで検索性が下がる可能性がある．(検索に引っかかっても一番下に来るようにラベル名は「zzzzz」から始まるものにしてはいるがちらちら目に映るのがうざったい．)これも本気出せば何とかなりそうだけど面倒なのでやらない．
+
+\end{document}
