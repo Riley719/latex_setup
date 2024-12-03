@@ -1,0 +1,76 @@
+{
+  // ===== Latex =====
+  // 使用パッケージのコマンドや環境の補完を有効にする
+  "latex-workshop.intellisense.package.enabled": true,
+  // ビルドのレシピ
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk (lualatex)",
+      "tools": [
+        "lualatexmk"
+      ]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "lualatexmk",
+      "command": "latexmk",
+      "args": [
+        "-lualatex",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+      ],
+      "env": {}
+    }
+  ],
+  // "latex-workshop.latex.autoClean.run": "onBuilt",
+  "latex-workshop.latex.autoBuild.clean.enabled": false,
+  // "latex-workshop.latex.clean.fileTypes": [
+  //   "*.bbl",
+  //   "*.blg",
+  //   "*.idx",
+  //   "*.ind",
+  //   "*.lof",
+  //   "*.lot",
+  //   "*.out",
+  //   "*.toc",
+  //   "*.acn",
+  //   "*.acr",
+  //   "*.alg",
+  //   "*.glg",
+  //   "*.glo",
+  //   "*.gls",
+  //   "*.ist",
+  //   "*.fls",
+  //   "*.fdb_latexmk",
+  //   "*.snm",
+  //   "*.nav",
+  //   "*.dvi",
+  // ],
+  //これより下の設定は人それぞれかも
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.chktex.enabled": false,
+  "latex-workshop.latex.autoBuild.run": "never",
+  "editor.minimap.enabled": false,
+  "window.zoomLevel": 0.2,
+  "grammarly.files.include": [
+    "**/readme.md",
+    "**/README.md",
+    "**/*.txt",
+    "**/*.tex"
+  ],
+  "editor.wordWrap": "on",
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+  //ファイルの監視対象の除外
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/.hg/store/**": true,
+    "/node_modules/": true,
+    "/.git/": true
+  }
+}
