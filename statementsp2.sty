@@ -1,0 +1,212 @@
+%Enviroment of Axiom, Def (definition), Th (theorem), Prop (proposition), Lem (lemma), Cor(corollary), Rem (remark), Ex (example), Question, Pred (prediction).
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{ifthen} %Using \ifthenelse
+\usepackage{etoolbox} %Using \ifstrequal
+\usepackage{amsthm} %Proof environment
+\usepackage[many]{tcolorbox} %Insert tcolorbox package and its option
+\usepackage{mfirstuc} %Capitalize only first letter
+\usepackage{globalvals} %Taking global values wherever refcommand is
+\usepackage{lua-ul} %Use underLine
+
+
+%Refference
+\mathtoolsset{showonlyrefs=true} %Give numbers of equation in equation and align environment only to refered them.
+\usepackage[
+    setpagesize=false,
+    bookmarks=true,
+    bookmarksdepth=tocdepth,
+    bookmarksnumbered=true,
+    colorlinks=true,
+    linkcolor=blue,
+    pdftitle={},
+    pdfsubject={},
+    pdfauthor={},
+    pdfkeywords={}
+]{hyperref} %Insert hyperlink into a document
+\usepackage{prettyref}
+\newrefformat{axiom}{Axiom~\ref*{#1}}
+\newrefformat{def}{Def~\ref*{#1}}
+\newrefformat{th}{Th~\ref*{#1}}
+\newrefformat{prop}{Prop~\ref*{#1}}
+\newrefformat{lem}{Lem~\ref*{#1}}
+\newrefformat{cor}{Cor~\ref*{#1}}
+\newrefformat{rem}{Rem~\ref*{#1}}
+\newrefformat{ex}{Ex~\ref*{#1}}
+\newrefformat{question}{Question~\ref*{#1}}
+\newrefformat{pred}{Pred~\ref*{#1}}
+\newcommand{\refsp}[1]{\hyperref[#1]{\prettyref{#1}}}
+
+
+%Define counter
+\newcounter{statementnum}[section]
+\renewcommand{\thestatementnum}{\arabic{section}.\arabic{statementnum}}
+\newcounter{allnum} %Recall and advance notice counter
+\setcounter{allnum}{0}
+%Statement color
+\definecolor{axiomcol}{rgb}{1,.8,.8}
+\definecolor{defcol}{rgb}{1,.8,.8}
+\definecolor{thcol}{rgb}{.7,.5,1}
+\definecolor{propcol}{rgb}{.8,.8,1}
+\definecolor{lemcol}{rgb}{.8,.8,1}
+\definecolor{corcol}{rgb}{.8,.8,1}
+\definecolor{remcol}{rgb}{1,1,.6}
+\definecolor{excol}{rgb}{.8,.8,.8}
+\definecolor{questioncol}{rgb}{.8,1,.8}
+\definecolor{predcol}{rgb}{1,.8,1}
+
+%Foundamental design of tcolorbox
+\tcbset{
+    statement/.style={
+            enhanced,
+            coltitle=black,
+            colframe=#1,
+            boxrule=2pt,
+            colback=white,
+            breakable,
+            sharp corners,
+            attach boxed title to top left={xshift=3mm, yshift*=-\tcboxedtitleheight/2},
+            boxed title style={
+                    colframe=#1,
+                    boxrule=2pt,
+                    colback=#1,
+                    sharp corners
+                },
+            after upper=\hfill $\square$
+        }
+}
+
+%For previewing and recalling box
+\makeatletter
+\newcommand{\usevalue}[1]{%
+  \ifcsname usevalue@#1\endcsname
+    \csname usevalue@#1\endcsname
+  \else
+    ??%
+  \fi
+}
+\newcommand{\definevalue}[2]{%
+  \write\@auxout{%
+    \unexpanded{\global\@namedef{usevalue@#1}{#2}}%
+  }
+}
+\makeatother
+
+%statementsp environment
+\NewDocumentEnvironment{statementsp}{r<> d[] d() +!b}{
+    \ifstrequal{#2}{}{
+        \stepcounter{statementnum}
+        \stepcounter{allnum}
+    }{
+        \refstepcounter{allnum}\label{zzzzz#1:#2}
+        \refstepcounter{statementnum}\label{#1:#2}
+        \ifstrequal{#3}{}{
+            \definevalue{pre#1:#2}{
+                \begin{tcolorbox}[statement=#1col, title={\underLine{\hyperref[#1:#2]{\MFUsentencecase{#1}~\ref*{#1:#2}}}~【Preview】}]
+                    #4
+                \end{tcolorbox}
+            }
+            \definevalue{re#1:#2}{
+                \begin{tcolorbox}[statement=#1col, title={\underLine{\hyperref[#1:#2]{\MFUsentencecase{#1}~\ref*{#1:#2}}}~【Recall】}]
+                    #4
+                \end{tcolorbox}
+            }
+        }{
+            \definevalue{pre#1:#2}{
+                \begin{tcolorbox}[statement=#1col, title={\underLine{\hyperref[#1:#2]{\MFUsentencecase{#1}~\ref*{#1:#2}}}~:(#3)~【Preview】}]
+                    #4
+                \end{tcolorbox}
+            }
+            \definevalue{re#1:#2}{
+                \begin{tcolorbox}[statement=#1col, title={\underLine{\hyperref[#1:#2]{\MFUsentencecase{#1}~\ref*{#1:#2}}}~:(#3)~【Recall】}]
+                    #4
+                \end{tcolorbox}
+            }
+        }
+    }
+    \ifstrequal{#3}{}{
+        \tcbset{
+            blank/.style={title={\underLine{\MFUsentencecase{#1}~\thestatementnum}}}
+        }
+    }{
+        \tcbset{
+            blank/.style={title={\underLine{\MFUsentencecase{#1}~\thestatementnum}~:~(#3)}}
+        }
+    }
+    \begin{tcolorbox}[statement=#1col, blank]
+        #4
+    \end{tcolorbox}
+}{}
+
+%statementsp* environment
+\NewDocumentEnvironment{statementsp*}{r<> d[] d() +!b}{
+    \ifthenelse{\equal{#2}{}}{
+        \stepcounter{allnum}
+    }{
+        \refstepcounter{allnum}\label{zzzzz#1:#2}
+        \ifthenelse{\equal{#3}{}}{
+            \definevalue{pre#1:#2}{
+                \begin{tcolorbox}[statement=#1col, title={\underLine{\MFUsentencecase{#1}}~【Preview】}]
+                    #4
+                \end{tcolorbox}
+            }
+            \definevalue{re#1:#2}{
+                \begin{tcolorbox}[statement=#1col, title={\underLine{\MFUsentencecase{#1}}~【Recall】}]
+                    #4
+                \end{tcolorbox}
+            }
+        }{
+            \definevalue{pre#1:#2}{
+                \begin{tcolorbox}[statement=#1col, title={\underLine{\MFUsentencecase{#1}}~:(#3)~【Preview】}]
+                    #4
+                \end{tcolorbox}
+            }
+            \definevalue{re#1:#2}{
+                \begin{tcolorbox}[statement=#1col, title={\underLine{\MFUsentencecase{#1}}~:(#3)~【Recall】}]
+                    #4
+                \end{tcolorbox}
+            }
+        }
+    }
+    \ifthenelse{\equal{#3}{}}{
+        \tcbset{
+            blank/.style={title={\underLine{\MFUsentencecase{#1}}}}
+        }
+    }{
+        \tcbset{
+            blank/.style={title={\underLine{\MFUsentencecase{#1}}~:~(#3)}}
+        }
+    }
+    \begin{tcolorbox}[statement=#1col, blank]
+        #4
+    \end{tcolorbox}
+}{}
+
+%Recall command
+\NewDocumentCommand{\refcallsp}{m}{
+    \ifthenelse{\value{allnum}<\ref{zzzzz#1}}{
+        \usevalue{pre#1}
+    }{
+        \usevalue{re#1}
+    }
+}
+
+
+%Proof environment
+\renewcommand{\proofname}{\textit{pf}.)} %Change first style of proof
+\renewcommand{\qedsymbol}{$\blacksquare$} %Change end style of proof
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{\par
+    \pushQED{\qed}%
+    \normalfont \topsep6\p@\@plus6\p@\relax
+    \trivlist
+    \item\relax
+    {
+        #1\@addpunct{}}\hspace\labelsep\ignorespaces
+}{%
+    \popQED\endtrivlist\@endpefalse
+}
+\makeatother
+
+\newenvironment{pfsp}{\begin{proof}}{\end{proof} \vspace{5mm}}
